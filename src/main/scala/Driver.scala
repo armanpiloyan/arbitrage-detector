@@ -67,12 +67,15 @@ object Driver {
     val dataCollector = new DataCollector()
     val rates = dataCollector.getExchangeRates(
       "https://min-api.cryptocompare.com/data/price",
-      "BTC",
-      ListBuffer("USD", "JPY", "EUR")
+      "LTC",
+      ListBuffer("USD", "BTC")
     )
 
     println()
     print(rates)
+
+
+    ShortestPaths
 
   }
 }
