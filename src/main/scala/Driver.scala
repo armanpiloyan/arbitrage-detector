@@ -1,3 +1,5 @@
+import scala.collection.mutable.ListBuffer
+
 object Driver {
   def main(args: Array[String]): Unit = {
 
@@ -59,6 +61,18 @@ object Driver {
     graph1.Edge(2).weight = -3
 
     graph1.BellmanFord(graph1, 0)
+
+
+    //Data scrapping
+    val dataCollector = new DataCollector()
+    val rates = dataCollector.getExchangeRates(
+      "https://min-api.cryptocompare.com/data/price",
+      "BTC",
+      ListBuffer("USD", "JPY", "EUR")
+    )
+
+    println()
+    print(rates)
 
   }
 }
