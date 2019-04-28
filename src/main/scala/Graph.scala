@@ -5,21 +5,25 @@ class Graph(v: Int, e: Int) {
   class Edge() {
     var src: Int = 0
     var dest: Int = 0
-    var weight: Int = 0
+    var weight: Double = 0.0
   }
 
   var V: Int = v
   var E: Int = e
+  val values = new Array[Double](v)
   val Edge = new ListBuffer[Edge]
 
   for (_ <- 1 to e)
     Edge += new Edge()
 
+  for (i <- 0 until v)
+    values(i) = 1
+
 
   def BellmanFord(graph: Graph, src: Int): Unit = {
     val E: Int = graph.E
     val V: Int = graph.V
-    val dist = new ListBuffer[Int]
+    val dist = new ListBuffer[Double]
     val parent = new ListBuffer[Int]
 
     //Initialize distances
@@ -83,7 +87,7 @@ class Graph(v: Int, e: Int) {
     println()
   }
 
-  def printDist(dist: ListBuffer[Int], V: Int): Unit = {
+  def printDist(dist: ListBuffer[Double], V: Int): Unit = {
     for (i <- 0 until V)
       println(i + "\t\t" + dist(i))
   }

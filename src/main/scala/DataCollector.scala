@@ -12,10 +12,10 @@ class DataCollector {
   case class Value(value: Double)
 
   def getExchangeRates(
-                           url: String,
-                           accordingTo: String,
-                           relativeTo: ListBuffer[String]
-                         ): collection.mutable.Map[String, Double] = {
+                        url: String,
+                        accordingTo: String,
+                        relativeTo: ListBuffer[String]
+                      ): collection.mutable.Map[String, Double] = {
 
     var params = collection.mutable.Map[String, String]()
     var convertTo = ""
