@@ -8,14 +8,17 @@ const blogSchema = new Schema({
             shape: String,
             image: String,
             label: String,
-            size: Number
+            size: Number,
+            group: Number
         }
     ],
     edges: [
         {
             from: Number,
             to: Number,
-            value: Number
+            label: String,
+            arrows: String,
+            group: Number
         }
     ],
     date: {

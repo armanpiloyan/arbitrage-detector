@@ -21,10 +21,10 @@ app.post('/addGraph', (req, res) => {
     let nodes = req.body.nodes.map(node => {
         return {
             id: node.id,
-            shape: "circularImage",
-            image: "/Users/armanmac/Documents/capstone/graph-utilities/images/dollar.png",
+            shape: "oval",
             label: node.name,
-            size: 50
+            size: 25,
+            group: node.group
         }
     });
 
@@ -32,7 +32,9 @@ app.post('/addGraph', (req, res) => {
         return {
             from: edge.from,
             to: edge.to,
-            value: edge.value
+            label: edge.value,
+            arrows: "to",
+            group: edge.group
         }
     });
 

@@ -6,18 +6,17 @@ class Graph(v: Int, e: Int) {
     var src: Int = 0
     var dest: Int = 0
     var weight: Double = 0.0
+    var weightReal: Double = 0.0
   }
 
   var V: Int = v
   var E: Int = e
-  val values = new Array[Double](v)
   val Edge = new ListBuffer[Edge]
+  var cycle = new ListBuffer[Int]
+
 
   for (_ <- 1 to e)
     Edge += new Edge()
-
-  for (i <- 0 until v)
-    values(i) = 1
 
 
   def BellmanFord(graph: Graph, src: Int): Unit = {
@@ -65,7 +64,7 @@ class Graph(v: Int, e: Int) {
 
     if (U != -1) {
       println("Negative cycle detected!")
-      printSolution(parent, U)
+      cycle = giveCycle(parent, U)
     }
 
     printDist(dist, V)
@@ -74,7 +73,7 @@ class Graph(v: Int, e: Int) {
   }
 
 
-  def printSolution(parent: ListBuffer[Int], start: Int): Unit = {
+  def giveCycle(parent: ListBuffer[Int], start: Int): ListBuffer[Int] = {
     val cycle = new ListBuffer[Int]
     var v = parent(start)
     cycle += start
@@ -83,8 +82,7 @@ class Graph(v: Int, e: Int) {
       v = parent(v)
       cycle += v
     }
-    println(cycle.reverse)
-    println()
+    return cycle.reverse
   }
 
   def printDist(dist: ListBuffer[Double], V: Int): Unit = {
