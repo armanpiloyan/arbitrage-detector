@@ -41,86 +41,131 @@
             const container = document.getElementById('page');
             const data = {
                 nodes: nodes,
-                edges: edges
+                edges: edges.map(edge => {
+                    if (edge.color === 'yellow') {
+                        return {
+                            from: edge.from,
+                            to: edge.to,
+                            label: edge.label,
+                            arrows: "to",
+                            color: {
+                                color: 'yellow',
+                            }
+                        }
+                    }
+                    else {
+                        return {
+                            from: edge.from,
+                            to: edge.to,
+                            label: edge.label,
+                            arrows: "to",
+                            color: {
+                                color: 'white'
+                            }
+                        }
+
+                    }
+
+                })
             };
+
 
             console.log(data);
 
-            // const options = {
-            //     nodes: {
-            //
-            //         color: {
-            //             background: '#95C623'
-            //         },
-            //         font: {color: '#eeeeee', "size": 10},
-            //     },
-            //     edges: {
-            //         arrows: 'to;from',
-            //         widthConstrait: false,
-            //         arrowStrikethrough: true,
-            //         color: {
-            //             color:'#0A090C',
-            //             highlight:'#D5A021',
-            //             hover: '#848484',
-            //             inherit: 'from',
-            //             opacity:1.0
-            //         },
-            //         chosen: true,
-            //         width: 1
-            //
-            //
-            //     },
-            //     physics:{
-            //         enabled: true,
-            //         barnesHut: {
-            //             gravitationalConstant: -2000,
-            //             centralGravity: 0.3,
-            //             springLength: 95,
-            //             springConstant: 0.04,
-            //             damping: 0.09,
-            //             avoidOverlap: 0
-            //         },
-            //         forceAtlas2Based: {
-            //             gravitationalConstant: -50,
-            //             centralGravity: 0.01,
-            //             springConstant: 0.08,
-            //             springLength: 100,
-            //             damping: 0.4,
-            //             avoidOverlap: 0
-            //         },
-            //         repulsion: {
-            //             centralGravity: 0.2,
-            //             springLength: 200,
-            //             springConstant: 0.05,
-            //             nodeDistance: 100,
-            //             damping: 0.09
-            //         },
-            //         hierarchicalRepulsion: {
-            //             centralGravity: 0.0,
-            //             springLength: 100,
-            //             springConstant: 0.01,
-            //             nodeDistance: 120,
-            //             damping: 0.09
-            //         },
-            //         solver: 'repulsion',
-            //         stabilization: {
-            //             enabled: true,
-            //             iterations: 1000,
-            //             updateInterval: 100,
-            //             onlyDynamicEdges: false,
-            //             fit: true
-            //         }
-            //     },
-            //     autoResize: true,
-            //     improvedLayout: true
-            //
-            // };
-
             const options = {
                 groups: {
-                    1: {color: 'black'},
-                    2: {color: 'yellow'}
+                    1: {color: 'white', mass: 10},
+                    2: {color: 'yellow', mass: 5}
                 },
+                physics: {
+                    enabled: true,
+                    barnesHut: {
+                        gravitationalConstant: -2000,
+                        centralGravity: 0.3,
+                        springLength: 95,
+                        springConstant: 0.04,
+                        damping: 0.09,
+                        avoidOverlap: 0
+                    },
+                    forceAtlas2Based: {
+                        gravitationalConstant: -50,
+                        centralGravity: 0.01,
+                        springConstant: 0.08,
+                        springLength: 100,
+                        damping: 0.4,
+                        avoidOverlap: 0
+                    },
+                    repulsion: {
+                        centralGravity: 0.2,
+                        springLength: 200,
+                        springConstant: 0.05,
+                        nodeDistance: 100,
+                        damping: 0.09
+                    },
+                    hierarchicalRepulsion: {
+                        centralGravity: 0.0,
+                        springLength: 100,
+                        springConstant: 0.01,
+                        nodeDistance: 120,
+                        damping: 0.09
+                    },
+                    solver: 'forceAtlas2Based',
+                    stabilization: {
+                        enabled: true,
+                        iterations: 1000,
+                        updateInterval: 100,
+                        onlyDynamicEdges: false,
+                        fit: true
+                    }
+                },
+                edges: {
+                    color: {
+                        color: '#848484',
+                        highlight: '#4528ba',
+                        hover: '#848484',
+                        inherit: 'from',
+                        opacity: 1.0
+                    },
+                    font: {
+                        color: '#343434',
+                        size: 14, // px
+                        face: 'arial',
+                        background: 'none',
+                        strokeWidth: 2, // px
+                        strokeColor: '#848484',
+                        align: 'horizontal',
+                        multi: false,
+                        vadjust: 0,
+                        bold: {
+                            color: '#fff',
+                            size: 14, // px
+                            face: 'arial',
+                            vadjust: 0,
+                            mod: 'bold'
+                        },
+                        ital: {
+                            color: '#343434',
+                            size: 14, // px
+                            face: 'arial',
+                            vadjust: 0,
+                            mod: 'italic',
+                        },
+                        boldital: {
+                            color: '#343434',
+                            size: 14, // px
+                            face: 'arial',
+                            vadjust: 0,
+                            mod: 'bold italic'
+                        },
+                        mono: {
+                            color: '#343434',
+                            size: 15, // px
+                            face: 'courier new',
+                            vadjust: 2,
+                            mod: ''
+                        }
+                    }
+                }
             };
 
             network = new vis.Network(container, data, options);

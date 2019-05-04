@@ -34,7 +34,7 @@ app.post('/addGraph', (req, res) => {
             to: edge.to,
             label: edge.value,
             arrows: "to",
-            group: edge.group
+            color: edge.color
         }
     });
 

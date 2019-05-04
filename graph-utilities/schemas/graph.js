@@ -18,7 +18,7 @@ const blogSchema = new Schema({
             to: Number,
             label: String,
             arrows: String,
-            group: Number
+            color: String
         }
     ],
     date: {

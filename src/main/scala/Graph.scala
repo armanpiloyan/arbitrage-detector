@@ -63,11 +63,12 @@ class Graph(v: Int, e: Int) {
     }
 
     if (U != -1) {
-      println("Negative cycle detected!")
       cycle = giveCycle(parent, U)
+      println("Negative cycle detected!")
+      println(cycle)
     }
 
-    printDist(dist, V)
+    //printDist(dist, V)
 
 
   }
@@ -82,7 +83,7 @@ class Graph(v: Int, e: Int) {
       v = parent(v)
       cycle += v
     }
-    return cycle.reverse
+    cycle.reverse
   }
 
   def printDist(dist: ListBuffer[Double], V: Int): Unit = {
