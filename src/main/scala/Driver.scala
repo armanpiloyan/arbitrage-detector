@@ -1,19 +1,27 @@
 import scala.collection.mutable.ListBuffer
 import ujson.{Obj, Value}
+
 import scala.util.Random
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkConf
 
 import scala.collection.mutable
 
-case class Node(id: Int, name: String)
-
-case class Edge(from: Int, to: Int, value: Double)
+case class CustomPair(graph: Graph, profit: Double, subset: Array[Int])
 
 
 object Driver {
   def main(args: Array[String]): Unit = {
 
-    val testCurrencyList = Array[String]("USD", "CAD", "JPY", "EUR", "CNY")
-    val testCurrencyInd = Array[Int](0, 1, 2, 3, 4)
+    val conf: SparkConf = new SparkConf().setAppName("CryptoMaster").setMaster("local")
+    val sc: SparkContext = new SparkContext(conf)
+
+
+    //    val testCurrencyList = Array[String]("USD", "CAD", "JPY", "EUR", "CNY")
+    //    val testCurrencyInd = Array[Int](0, 1, 2, 3, 4)
+
+    val random = new Random()
+    val subsets = new ListBuffer[Array[Int]]
 
     val currencyList = Array[String](
       "BTC", "LTC", "NMC", "PPC", "XDG", "GRC", "XPM", "XRP", "NXT", "AUR", "DASH", "NEO", "MZC", "XMR", "XEM",
@@ -22,37 +30,51 @@ object Driver {
       "NOK", "PHP", "PLN", "SGD", "SEK", "AED"
     )
 
-    val random = new Random()
-    val randList = (for (_ <- 1 to 10) yield random.nextInt(36)).toArray
+    for (_ <- 0 until 20) {
+      subsets += (for (_ <- 1 to 10) yield random.nextInt(currencyList.length - 1)).toArray
+    }
 
+    val subsetsParallel = sc.parallelize(subsets)
 
-    //    val graph = constructGraph(
-    //      randList,
-    //      0.5,
-    //      currencyList
-    //    )
-    //
-    //    postGraph(
-    //      graph,
-    //      randList,
-    //      currencyList
-    //    )
-    //
-    //    print("Done!")
+    val bestCaseGraph = subsetsParallel.map(
+      subset => {
+        val graph = constructGraph(subset, 0.5, currencyList)
+        println(graph.Edge.length)
+        CustomPair(graph, sparkMapper(graph), subset)
+      }
+    ).reduce((a, b) => {
+      if (a.profit > b.profit)
+        a
+      else
+        b
+    })
 
-
-    val testGraph = generateTestGraph()
-
-
-    testGraph.BellmanFord(testGraph, 0)
+    println("Sending most profitable graph...")
 
     postGraph(
-      testGraph,
-      testCurrencyInd,
-      testCurrencyList
+      graph = bestCaseGraph.graph,
+      includeCurrencies = bestCaseGraph.subset,
+      currencyList = currencyList
     )
 
+  }
 
+  def sparkMapper(graph: Graph): Double = {
+    var arbitrageValue = 1.0
+    graph.BellmanFord(graph, 0)
+    if (graph.cycle.nonEmpty) {
+      for (i <- graph.cycle.indices) {
+        if (i != graph.cycle.length - 1) {
+          graph.Edge.foreach(edge => {
+            if (edge.src == graph.cycle(i) && edge.dest == graph.cycle(i + 1)) {
+              arbitrageValue *= edge.weightReal
+            }
+          })
+        }
+      }
+      1 - arbitrageValue
+    }
+    else 0.0
   }
 
 

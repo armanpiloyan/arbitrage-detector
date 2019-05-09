@@ -1,8 +1,8 @@
 import scala.collection.mutable.ListBuffer
 
-class Graph(v: Int, e: Int) {
+class Graph(v: Int, e: Int) extends Serializable {
 
-  class Edge() {
+  class Edge() extends Serializable {
     var src: Int = 0
     var dest: Int = 0
     var weight: Double = 0.0
