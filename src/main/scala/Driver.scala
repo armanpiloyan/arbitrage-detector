@@ -24,14 +24,21 @@ object Driver {
     val subsets = new ListBuffer[Array[Int]]
 
     val currencyList = Array[String](
-      "BTC", "LTC", "NMC", "PPC", "XDG", "GRC", "XPM", "XRP", "NXT", "AUR", "DASH", "NEO", "MZC", "XMR", "XEM",
-      "POT", "TIT", "XVG", "XLM", "VTC", "ETH", "ETC", "USDT", "ZEC", "BCH", "EOS", "AFN", "EUR", "ALL", "DZD", "USD",
-      "GBP", "AUD", "EUR", "INR", "ARS", "BRL", "CAD", "CNY", "NZD", "DKK", "HKD", "ILS", "JPY", "KES", "CHF", "MXN",
-      "NOK", "PHP", "PLN", "SGD", "SEK", "AED"
+      "USD", "JPY", "BGN", "CZK", "DKK", "GBP", "HUF", "PLN", "RON", "SEK", "CHF", "ISK", "NOK",
+      "HRK", "RUB", "TRY", "AUD", "BRL", "CAD", "CNY", "HKD", "IDR", "ILS", "INR", "KRW", "MXN",
+      "MYR", "NZD", "PHP", "SGD", "THB", "ZAR"
     )
 
-    for (_ <- 0 until 20) {
-      subsets += (for (_ <- 1 to 10) yield random.nextInt(currencyList.length - 1)).toArray
+    //    val currencyList = Array[String](
+    //      "BTC", "LTC", "NMC", "PPC", "XDG", "GRC", "XPM", "XRP", "NXT", "AUR", "DASH", "NEO", "MZC", "XMR", "XEM",
+    //      "POT", "TIT", "XVG", "XLM", "VTC", "ETH", "ETC", "USDT", "ZEC", "BCH", "EOS", "AFN", "EUR", "ALL", "DZD", "USD",
+    //      "GBP", "AUD", "EUR", "INR", "ARS", "BRL", "CAD", "CNY", "NZD", "DKK", "HKD", "ILS", "JPY", "KES", "CHF", "MXN",
+    //      "NOK", "PHP", "PLN", "SGD", "SEK", "AED"
+    //    )
+
+
+    for (_ <- 0 until 40) {
+      subsets += (for (_ <- 1 to 20) yield random.nextInt(currencyList.length - 1)).toArray
     }
 
     val subsetsParallel = sc.parallelize(subsets)
@@ -39,7 +46,6 @@ object Driver {
     val bestCaseGraph = subsetsParallel.map(
       subset => {
         val graph = constructGraph(subset, 0.5, currencyList)
-        println(graph.Edge.length)
         CustomPair(graph, sparkMapper(graph), subset)
       }
     ).reduce((a, b) => {
@@ -57,6 +63,7 @@ object Driver {
       currencyList = currencyList
     )
 
+
   }
 
   def sparkMapper(graph: Graph): Double = {
@@ -72,7 +79,7 @@ object Driver {
           })
         }
       }
-      1 - arbitrageValue
+      arbitrageValue
     }
     else 0.0
   }
@@ -86,9 +93,16 @@ object Driver {
 
     for (row <- 0 until V) {
       for (col <- 0 until V) {
+        matrix(row)(col) = 0
+      }
+    }
+
+    for (row <- 0 until V) {
+      for (col <- 0 until V) {
         val currProb = giveProb(includeCurrencies(row), includeCurrencies(col))
         if (currProb > treshhold)
           E += 1
+
         matrix(row)(col) = currProb
       }
     }
@@ -102,11 +116,17 @@ object Driver {
           graph.Edge(edgeCount).src = row
           graph.Edge(edgeCount).dest = col
 
-          val rate = dataCollector.getExchangeRates(
-            "https://min-api.cryptocompare.com/data/price",
-            currencyList(includeCurrencies(row)),
-            ListBuffer(currencyList(includeCurrencies(col)))
-          )(currencyList(includeCurrencies(col)))
+          //          val rate = dataCollector.getExchangeRates(
+          //            "https://min-api.cryptocompare.com/data/price",
+          //            currencyList(includeCurrencies(row)),
+          //            ListBuffer(currencyList(includeCurrencies(col)))
+          //          )(currencyList(includeCurrencies(col)))
+
+          val rate = dataCollector
+            .getExchageRatesReal(
+              "https://api.exchangeratesapi.io/latest",
+              currencyList(includeCurrencies(row)),
+              currencyList(includeCurrencies(col)))(currencyList(includeCurrencies(col)))
 
           graph.Edge(edgeCount).weight = -math.log(rate)
           graph.Edge(edgeCount).weightReal = rate

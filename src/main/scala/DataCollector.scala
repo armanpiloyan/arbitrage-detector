@@ -44,6 +44,31 @@ class DataCollector {
     return rates
   }
 
+  def getExchageRatesReal(url: String, from: String, to: String): collection.mutable.Map[String, Double] = {
+
+    var params = collection.mutable.Map[String, String]()
+    params += ("base" -> from)
+    params += ("symbols" -> to)
+
+    val req = requests.get(
+      url,
+      params = params
+
+    )
+
+    var rates = collection.mutable.Map[String, Double]()
+
+    for (
+      child <- (parse(req.text) \ "rates")
+        .extract[JObject](net.liftweb.json.DefaultFormats, toManifest[JObject])
+        .children
+    ) {
+      rates += (to -> child.extract[Double](net.liftweb.json.DefaultFormats, toManifest[Double]))
+    }
+
+    rates
+  }
+
   def toManifest[T: TypeTag]: Manifest[T] = {
     val t = typeTag[T]
     val mirror = t.mirror

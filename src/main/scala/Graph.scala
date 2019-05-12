@@ -1,5 +1,7 @@
 import scala.collection.mutable.ListBuffer
 
+object AllDone extends Exception {}
+
 class Graph(v: Int, e: Int) extends Serializable {
 
   class Edge() extends Serializable {
@@ -50,39 +52,51 @@ class Graph(v: Int, e: Int) extends Serializable {
 
     var U: Int = -1
 
-    //Negative cycle detection
-    for (j <- 0 until E) {
-      val u = graph.Edge(j).src
-      val v = graph.Edge(j).dest
-      val weight = graph.Edge(j).weight
-      if (dist(u) != Int.MaxValue &&
-        dist(u) + weight < dist(v)) {
-        U = u
+    try {
+      //Negative cycle detection
+      for (j <- 0 until E) {
+        val u = graph.Edge(j).src
+        val v = graph.Edge(j).dest
+        val weight = graph.Edge(j).weight
+        if (dist(u) != Int.MaxValue &&
+          dist(u) + weight < dist(v)) {
+          U = u
+          throw AllDone
+        }
       }
-
     }
-
-    if (U != -1) {
-      cycle = giveCycle(parent, U)
-      println("Negative cycle detected!")
-      println(cycle)
+    catch {
+      case AllDone => {
+        cycle = giveCycle(parent, U)
+        println("Negative cycle detected!")
+        println(cycle)
+      }
     }
 
     //printDist(dist, V)
-
-
   }
 
 
-  def giveCycle(parent: ListBuffer[Int], start: Int): ListBuffer[Int] = {
+  def giveCycle(parent: ListBuffer[Int], startImm: Int): ListBuffer[Int] = {
     val cycle = new ListBuffer[Int]
+    var visited: Set[Int] = Set()
+    var start = startImm
     var v = parent(start)
     cycle += start
-    cycle += v
     while (v != start) {
-      v = parent(v)
       cycle += v
+      v = parent(v)
+      if (!visited.contains(v))
+        visited += v
+      else {
+        cycle.clear()
+        visited = Set()
+        start = v
+        v = parent(v)
+        cycle+=start
+      }
     }
+    cycle+=v
     cycle.reverse
   }
 
