@@ -26,22 +26,18 @@ class Graph(v: Int, e: Int) extends Serializable {
     val V: Int = graph.V
     val dist = new ListBuffer[Double]
     val parent = new ListBuffer[Int]
-
     //Initialize distances
     for (_ <- 0 until V) {
       dist += Int.MaxValue
       parent += -1
     }
-
     dist(src) = 0
-
     //Relaxation
     for (_ <- 1 until V) {
       for (j <- 0 until E) {
         val u = graph.Edge(j).src
         val v = graph.Edge(j).dest
         val weight = graph.Edge(j).weight
-
         if (dist(u) != Int.MaxValue &&
           dist(u) + weight < dist(v)) {
           dist(v) = dist(u) + weight
@@ -49,9 +45,7 @@ class Graph(v: Int, e: Int) extends Serializable {
         }
       }
     }
-
     var U: Int = -1
-
     try {
       //Negative cycle detection
       for (j <- 0 until E) {
@@ -72,8 +66,6 @@ class Graph(v: Int, e: Int) extends Serializable {
         println(cycle)
       }
     }
-
-    //printDist(dist, V)
   }
 
 

@@ -23,18 +23,18 @@ object Driver {
     val random = new Random()
     val subsets = new ListBuffer[Array[Int]]
 
-    val currencyList = Array[String](
-      "USD", "JPY", "BGN", "CZK", "DKK", "GBP", "HUF", "PLN", "RON", "SEK", "CHF", "ISK", "NOK",
-      "HRK", "RUB", "TRY", "AUD", "BRL", "CAD", "CNY", "HKD", "IDR", "ILS", "INR", "KRW", "MXN",
-      "MYR", "NZD", "PHP", "SGD", "THB", "ZAR"
-    )
-
     //    val currencyList = Array[String](
-    //      "BTC", "LTC", "NMC", "PPC", "XDG", "GRC", "XPM", "XRP", "NXT", "AUR", "DASH", "NEO", "MZC", "XMR", "XEM",
-    //      "POT", "TIT", "XVG", "XLM", "VTC", "ETH", "ETC", "USDT", "ZEC", "BCH", "EOS", "AFN", "EUR", "ALL", "DZD", "USD",
-    //      "GBP", "AUD", "EUR", "INR", "ARS", "BRL", "CAD", "CNY", "NZD", "DKK", "HKD", "ILS", "JPY", "KES", "CHF", "MXN",
-    //      "NOK", "PHP", "PLN", "SGD", "SEK", "AED"
+    //      "USD", "JPY", "BGN", "CZK", "DKK", "GBP", "HUF", "PLN", "RON", "SEK", "CHF", "ISK", "NOK",
+    //      "HRK", "RUB", "TRY", "AUD", "BRL", "CAD", "CNY", "HKD", "IDR", "ILS", "INR", "KRW", "MXN",
+    //      "MYR", "NZD", "PHP", "SGD", "THB", "ZAR"
     //    )
+
+    val currencyList = Array[String](
+      "BTC", "LTC", "NMC", "PPC", "XDG", "GRC", "XPM", "XRP", "NXT", "AUR", "DASH", "NEO", "MZC", "XMR", "XEM",
+      "POT", "TIT", "XVG", "XLM", "VTC", "ETH", "ETC", "USDT", "ZEC", "BCH", "EOS", "AFN", "EUR", "ALL", "DZD", "USD",
+      "GBP", "AUD", "EUR", "INR", "ARS", "BRL", "CAD", "CNY", "NZD", "DKK", "HKD", "ILS", "JPY", "KES", "CHF", "MXN",
+      "NOK", "PHP", "PLN", "SGD", "SEK", "AED"
+    )
 
 
     for (_ <- 0 until 40) {
@@ -116,17 +116,17 @@ object Driver {
           graph.Edge(edgeCount).src = row
           graph.Edge(edgeCount).dest = col
 
-          //          val rate = dataCollector.getExchangeRates(
-          //            "https://min-api.cryptocompare.com/data/price",
-          //            currencyList(includeCurrencies(row)),
-          //            ListBuffer(currencyList(includeCurrencies(col)))
-          //          )(currencyList(includeCurrencies(col)))
+          val rate = dataCollector.getExchangeRates(
+            "https://min-api.cryptocompare.com/data/price",
+            currencyList(includeCurrencies(row)),
+            ListBuffer(currencyList(includeCurrencies(col)))
+          )(currencyList(includeCurrencies(col)))
 
-          val rate = dataCollector
-            .getExchageRatesReal(
-              "https://api.exchangeratesapi.io/latest",
-              currencyList(includeCurrencies(row)),
-              currencyList(includeCurrencies(col)))(currencyList(includeCurrencies(col)))
+          //          val rate = dataCollector
+          //            .getExchageRatesReal(
+          //              "https://api.exchangeratesapi.io/latest",
+          //              currencyList(includeCurrencies(row)),
+          //              currencyList(includeCurrencies(col)))(currencyList(includeCurrencies(col)))
 
           graph.Edge(edgeCount).weight = -math.log(rate)
           graph.Edge(edgeCount).weightReal = rate
